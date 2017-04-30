@@ -28,6 +28,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import javax.swing.JCheckBox;
 
 public class DungeonsAndDynamites extends JFrame {
 
@@ -69,6 +70,7 @@ public class DungeonsAndDynamites extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
+		
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
@@ -85,12 +87,29 @@ public class DungeonsAndDynamites extends JFrame {
 		mnFile.add(mntmPrint);
 		
 		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
 		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_MASK));
 		mnFile.add(mntmExit);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+		
+		JMenuItem mntmFaq = new JMenuItem("FAQ");
+		mntmFaq.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(frame, "Dungeon and Dynamites FAQ \n\n How do you log in? \n "
+						+ "Bruh, just put in your player ID and if you're a DM click the checkbox and hit log in \n\n [next question] \n\n");
+			}
+		});
+		mnHelp.add(mntmFaq);
 		
 		Playerid = new JTextField();
 		Playerid.setBounds(138, 79, 145, 30);
@@ -101,6 +120,10 @@ public class DungeonsAndDynamites extends JFrame {
 		idlabel.setFont(new Font("Times New Roman", Font.BOLD, 13));
 		idlabel.setBounds(56, 86, 72, 16);
 		contentPane.add(idlabel);
+		
+		JCheckBox chckbxDm = new JCheckBox("DM");
+		chckbxDm.setBounds(138, 116, 97, 23);
+		contentPane.add(chckbxDm);
 		
 		//Here will need to have SQL connection and try-catch block. 
 		JButton btnLogin = new JButton("LOGIN");
@@ -114,6 +137,14 @@ public class DungeonsAndDynamites extends JFrame {
 					reportframe.setVisible(true);
 					
 					dispose(); //Closes the login window so the Report window will appear. Wasn't sure how to have a new Panel appear, hope this is ok.
+				}
+				if((uId.equals("654321"))& (chckbxDm.isSelected())){
+					JOptionPane.showMessageDialog(frame, "Login Successful, DUNGEON MASTER!");
+					//create object
+					reportframe reportframe= new reportframe();
+					reportframe.setVisible(true);
+					
+					dispose();
 				}
 				else
 				{
@@ -132,5 +163,6 @@ public class DungeonsAndDynamites extends JFrame {
 		btnRegister.setFont(new Font("Times New Roman", Font.BOLD, 13));
 		btnRegister.setBounds(228, 178, 107, 23);
 		contentPane.add(btnRegister);
+		
 	}
 }

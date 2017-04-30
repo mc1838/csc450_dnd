@@ -1,0 +1,5 @@
+MagDyn's Stats: 3 lives 
+Successes: 1
+Fails: 3
+Score: 98
+Number of Quests left: 8 
