@@ -1,25 +1,43 @@
-import java.awt.BorderLayout;
+/**
+ * Dungeons and Dynamites desktop application for a text based game.
+ * author Max , Shanade Beharry, Ronald Chaplin
+ * 
+ */
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
-import java.awt.FlowLayout;
-import javax.swing.JTextPane;
 import javax.swing.JLabel;
 import java.awt.Font;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import java.awt.Window.Type;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+import java.awt.event.KeyEvent;
+import java.net.URL;
+import java.awt.event.InputEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
 
 public class DungeonsAndDynamites extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected static final Component frame = null;
 	private JPanel contentPane;
-	private JTextField UserName;
-	private JTextField Password;
+	private JTextField Playerid;
 
 	/**
 	 * Launch the application.
@@ -38,10 +56,12 @@ public class DungeonsAndDynamites extends JFrame {
 	}
 
 	/**
-	 * Create the frame.
+	 * Creates the frame and contains the action listeners required to communicate with the database.
 	 */
 	public DungeonsAndDynamites() {
-		setType(Type.UTILITY);
+		URL iconURL = getClass().getResource("Dynamite.png"); //Puts the icon I made onto the JFrame so it wouldn't have that weird tea cup logo.
+		ImageIcon icon= new ImageIcon(iconURL);
+		setIconImage(icon.getImage());
 		setTitle("Dungeons and Dynamites");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -49,34 +69,59 @@ public class DungeonsAndDynamites extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
-		JMenu mnNewMenu = new JMenu("New menu");
-		menuBar.add(mnNewMenu);
+		JMenu mnFile = new JMenu("File");
+		menuBar.add(mnFile);
+		
+		JMenuItem mntmOpen = new JMenuItem("Open");
+		mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_MASK));
+		mnFile.add(mntmOpen);
+		
+		JMenuItem mntmSave = new JMenuItem("Save");
+		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+		mnFile.add(mntmSave);
+		
+		JMenuItem mntmPrint = new JMenuItem("Print");
+		mntmPrint.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+		mnFile.add(mntmPrint);
+		
+		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_MASK));
+		mnFile.add(mntmExit);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		UserName = new JTextField();
-		UserName.setBounds(138, 79, 145, 30);
-		contentPane.add(UserName);
-		UserName.setColumns(10);
+		Playerid = new JTextField();
+		Playerid.setBounds(138, 79, 145, 30);
+		contentPane.add(Playerid);
+		Playerid.setColumns(10);
 		
-		Password = new JTextField();
-		Password.setBounds(138, 134, 145, 30);
-		contentPane.add(Password);
-		Password.setColumns(10);
+		JLabel idlabel = new JLabel("PLAYER ID");
+		idlabel.setFont(new Font("Times New Roman", Font.BOLD, 13));
+		idlabel.setBounds(56, 86, 72, 16);
+		contentPane.add(idlabel);
 		
-		JLabel namelabel = new JLabel("USERNAME");
-		namelabel.setFont(new Font("Times New Roman", Font.BOLD, 13));
-		namelabel.setBounds(59, 85, 79, 16);
-		contentPane.add(namelabel);
-		
-		JLabel pwlabel = new JLabel("PASSWORD");
-		pwlabel.setFont(new Font("Times New Roman", Font.BOLD, 13));
-		pwlabel.setBounds(59, 142, 79, 14);
-		contentPane.add(pwlabel);
-		
+		//Here will need to have SQL connection and try-catch block. 
 		JButton btnLogin = new JButton("LOGIN");
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String uId= Playerid.getText();
+				if(uId.equals("123456")){
+					JOptionPane.showMessageDialog(frame, "Login Successful");
+					//create object
+					reportframe reportframe= new reportframe();
+					reportframe.setVisible(true);
+					
+					dispose(); //Closes the login window so the Report window will appear. Wasn't sure how to have a new Panel appear, hope this is ok.
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(frame, "Invalid Player ID");
+					dispose();
+				}
+			}
+		});
 		btnLogin.setBackground(Color.LIGHT_GRAY);
 		btnLogin.setFont(new Font("Times New Roman", Font.BOLD, 13));
 		btnLogin.setBounds(93, 178, 89, 23);
