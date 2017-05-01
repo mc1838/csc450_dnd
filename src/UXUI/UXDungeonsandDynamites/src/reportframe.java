@@ -91,8 +91,9 @@ public class reportframe extends JFrame {
 		JMenuItem mntmFaq = new JMenuItem("FAQ");
 		mntmFaq.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(frame, "Dungeon and Dynamites FAQ \n\n How do you become the dungeon master? \n "
-						+ "Bruh I don't know \n\n [next question] \n\n");
+				JOptionPane.showMessageDialog(frame, "Dungeon and Dynamites FAQ \n"
+						+ "Click Get Report to get a Report on your Player,\n"
+						+ " or click Logout to go back to login screen");
 			}
 		});
 		mnHelp.add(mntmFaq);

@@ -18,7 +18,6 @@ public class Connect
 	 */
 	String connectionString = "";
 	Connection connection = null;
-//	String countQuery = "SELECT COUNT(*) FROM";
 	
 	
 	/**
@@ -177,6 +176,64 @@ public class Connect
 	}
 	
 	/**
+	 * login - Parses int from DM ID string,
+	 * checks DB IDs, and compares given ID to existing set.
+	 * @param dmID - given DM_ID, as string
+	 * @return isValid - true if ID is valid and exists; false if invalid/doesn't exist
+	 */
+	public boolean loginDM(String dmID)
+	{
+      boolean isValid = false;
+      int DM_ID = 0;
+      int tempID = 0;
+      
+      // CHECK 1: See if input is a valid number
+      while (!isValid)
+      {
+          try
+          {
+          	tempID = Integer.parseInt(dmID);
+          }
+          
+          catch (Exception e)
+          {
+        	isValid = false;
+        	return isValid;
+          }
+          
+          // Was valid number
+          DM_ID = tempID;
+          isValid = true;
+      }
+      
+      // Get current IDs in DB:
+      String LoginQuery = "SELECT [DM_ID] FROM [dbo].[DungeonMaster]";
+      
+      ArrayList<String[]> result = this.connectSelect(LoginQuery);
+      String[] currentIDs = new String[result.size()];
+      for (int i=0; i<result.size(); i++)
+      {
+      	currentIDs[i] = result.get(i)[0]; //0th index since Player_ID has only 1 char.
+      }
+      
+      isValid = false; //reset to check again
+      
+      // CHECK 2: See if given ID is actually in DB
+      for (int i=0; i<currentIDs.length; i++)
+      {
+      	tempID = this.parseIntsFromResult(currentIDs[i])[0];
+      	if (tempID == DM_ID)
+      	{
+      		isValid = true;
+      		break;
+      	}
+      	
+      }
+      
+      return isValid;
+	}
+	
+	/**
 	 * register - Inserts a default row into Player table,
 	 * then grabs the newest Player_ID for the player,
 	 * for later usage.
@@ -190,6 +247,32 @@ public class Connect
         
         // Check current IDs in DB
         String LoginQuery = "SELECT [Player_ID] FROM [dbo].[Player]";
+        ArrayList<String[]> result = this.connectSelect(LoginQuery);
+        String[] currentIDs = new String[result.size()];
+        for (int i=0; i<result.size(); i++)
+        {
+        	currentIDs[i] = result.get(i)[0]; //0th index since Player_ID fits into first index
+        }
+        
+        // Grab only the last ID:
+        int lastID = this.parseIntsFromResult(currentIDs[currentIDs.length-1])[0];
+        return lastID;
+	}
+	
+	/**
+	 * register - Inserts a default row into Player table,
+	 * then grabs the newest Player_ID for the player,
+	 * for later usage.
+	 * @return lastID - new Player_ID
+	 */
+	public int registerDM()
+	{
+		//Insert new default row in Player
+        String newDMQuery = "INSERT INTO [dbo].[DungeonMaster] DEFAULT VALUES";
+        this.connectExecute(newDMQuery);
+        
+        // Check current IDs in DB
+        String LoginQuery = "SELECT [DM_ID] FROM [dbo].[DungeonMaster]";
         ArrayList<String[]> result = this.connectSelect(LoginQuery);
         String[] currentIDs = new String[result.size()];
         for (int i=0; i<result.size(); i++)
