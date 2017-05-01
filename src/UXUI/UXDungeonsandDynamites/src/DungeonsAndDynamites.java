@@ -119,7 +119,9 @@ public class DungeonsAndDynamites extends JFrame {
 		mntmFaq.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(frame, "Dungeon and Dynamites FAQ \n\n How do you log in? \n "
-						+ "Bruh, just put in your player ID and if you're a DM click the checkbox and hit log in \n\n [next question] \n\n");
+						+ "For Login: Enter a Player or DM ID and click Login\n"
+						+ "For Register: Simply click Register and \n"
+						+ "a new ID will be generated");
 			}
 		});
 		mnHelp.add(mntmFaq);
@@ -162,7 +164,7 @@ public class DungeonsAndDynamites extends JFrame {
 				
 				else if (chckbxDm.isSelected() && !uId.isEmpty())
 				{
-					isValid = connectClass.login(uId);
+					isValid = connectClass.loginDM(uId);
 					if (isValid)
 					{
 						JOptionPane.showMessageDialog(frame, "Login Successful, DUNGEON MASTER!");
@@ -174,24 +176,6 @@ public class DungeonsAndDynamites extends JFrame {
 					}
 					
 				}
-				
-				//OLD
-//				if(uId.equals("123456")){
-//					JOptionPane.showMessageDialog(frame, "Login Successful");
-//					//create object
-//					reportframe reportframe= new reportframe(uId); //need to pass in uId!
-//					reportframe.setVisible(true);
-//					
-//					dispose(); //Closes the login window so the Report window will appear. Wasn't sure how to have a new Panel appear, hope this is ok.
-//				}
-//				if((uId.equals("654321"))& (chckbxDm.isSelected())){
-//					JOptionPane.showMessageDialog(frame, "Login Successful, DUNGEON MASTER!");
-//					//create object
-//					reportframe reportframe= new reportframe(uId); //need to pass in uId!
-//					reportframe.setVisible(true);
-//					
-//					dispose();
-//				}
 				
 				else if ((uId.isEmpty()) || (!isValid)) //empty field or invalid by proof
 				{
@@ -207,12 +191,6 @@ public class DungeonsAndDynamites extends JFrame {
 					uId = "";
 				}
 				
-//				if (!isValid) //proven invalid!
-//				{
-//					JOptionPane.showMessageDialog(frame, "Invalid Player ID");
-//					Playerid.setText("");
-////					dispose();
-//				}
 			}
 		});
 		btnLogin.setBackground(Color.LIGHT_GRAY);
