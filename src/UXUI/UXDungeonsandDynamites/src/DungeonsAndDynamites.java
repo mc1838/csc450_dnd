@@ -28,6 +28,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import javax.swing.JCheckBox;
 
 public class DungeonsAndDynamites extends JFrame {
 
@@ -38,6 +39,19 @@ public class DungeonsAndDynamites extends JFrame {
 	protected static final Component frame = null;
 	private JPanel contentPane;
 	private JTextField Playerid;
+	public String uId = "";
+	
+	String connectionString = 
+    		"jdbc:sqlserver://csc450.database.windows.net:1433;" + 
+    		"database=testdb;" + 
+    		"user=mc1838@csc450;password=Project450;" + 
+    		"encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
+    String connectionString_GameDB = 
+    		"jdbc:sqlserver://csc450.database.windows.net:1433;" + 
+    		"database=GameDB;" + 
+    		"user=mc1838@csc450;password=Project450;" + 
+    		"encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
+	private Connect connectClass = new Connect(connectionString);
 
 	/**
 	 * Launch the application.
@@ -69,6 +83,7 @@ public class DungeonsAndDynamites extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
+		
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
@@ -85,12 +100,29 @@ public class DungeonsAndDynamites extends JFrame {
 		mnFile.add(mntmPrint);
 		
 		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
 		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_MASK));
 		mnFile.add(mntmExit);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+		
+		JMenuItem mntmFaq = new JMenuItem("FAQ");
+		mntmFaq.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(frame, "Dungeon and Dynamites FAQ \n\n How do you log in? \n "
+						+ "Bruh, just put in your player ID and if you're a DM click the checkbox and hit log in \n\n [next question] \n\n");
+			}
+		});
+		mnHelp.add(mntmFaq);
 		
 		Playerid = new JTextField();
 		Playerid.setBounds(138, 79, 145, 30);
@@ -102,24 +134,85 @@ public class DungeonsAndDynamites extends JFrame {
 		idlabel.setBounds(56, 86, 72, 16);
 		contentPane.add(idlabel);
 		
+		JCheckBox chckbxDm = new JCheckBox("DM");
+		chckbxDm.setBounds(138, 116, 97, 23);
+		contentPane.add(chckbxDm);
+		
 		//Here will need to have SQL connection and try-catch block. 
 		JButton btnLogin = new JButton("LOGIN");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String uId= Playerid.getText();
-				if(uId.equals("123456")){
-					JOptionPane.showMessageDialog(frame, "Login Successful");
-					//create object
-					reportframe reportframe= new reportframe();
-					reportframe.setVisible(true);
+				boolean isValid = false;
+				//NEW
+				if (!chckbxDm.isSelected() && !uId.isEmpty())
+				{
+					isValid = connectClass.login(uId);
+					if (isValid)
+					{
+						JOptionPane.showMessageDialog(frame, "Login Successful");
+						//create object
+						reportframe reportframe= new reportframe(uId); //need to pass in uId!
+						reportframe.setVisible(true);
+						
+						dispose(); //Closes the login window so the Report window will appear. Wasn't sure how to have a new Panel appear, hope this is ok.
+					}
 					
-					dispose(); //Closes the login window so the Report window will appear. Wasn't sure how to have a new Panel appear, hope this is ok.
 				}
-				else
+				
+				else if (chckbxDm.isSelected() && !uId.isEmpty())
+				{
+					isValid = connectClass.login(uId);
+					if (isValid)
+					{
+						JOptionPane.showMessageDialog(frame, "Login Successful, DUNGEON MASTER!");
+						//create object
+						reportframe reportframe= new reportframe(uId); //need to pass in uId!
+						reportframe.setVisible(true);
+						
+						dispose();
+					}
+					
+				}
+				
+				//OLD
+//				if(uId.equals("123456")){
+//					JOptionPane.showMessageDialog(frame, "Login Successful");
+//					//create object
+//					reportframe reportframe= new reportframe(uId); //need to pass in uId!
+//					reportframe.setVisible(true);
+//					
+//					dispose(); //Closes the login window so the Report window will appear. Wasn't sure how to have a new Panel appear, hope this is ok.
+//				}
+//				if((uId.equals("654321"))& (chckbxDm.isSelected())){
+//					JOptionPane.showMessageDialog(frame, "Login Successful, DUNGEON MASTER!");
+//					//create object
+//					reportframe reportframe= new reportframe(uId); //need to pass in uId!
+//					reportframe.setVisible(true);
+//					
+//					dispose();
+//				}
+				
+				else if ((uId.isEmpty()) || (!isValid)) //empty field or invalid by proof
 				{
 					JOptionPane.showMessageDialog(frame, "Invalid Player ID");
-					dispose();
+					Playerid.setText("");
+					uId = "";
 				}
+				
+				else if (!isValid)
+				{
+					JOptionPane.showMessageDialog(frame, "Invalid Player ID");
+					Playerid.setText("");
+					uId = "";
+				}
+				
+//				if (!isValid) //proven invalid!
+//				{
+//					JOptionPane.showMessageDialog(frame, "Invalid Player ID");
+//					Playerid.setText("");
+////					dispose();
+//				}
 			}
 		});
 		btnLogin.setBackground(Color.LIGHT_GRAY);
@@ -128,9 +221,20 @@ public class DungeonsAndDynamites extends JFrame {
 		contentPane.add(btnLogin);
 		
 		JButton btnRegister = new JButton("REGISTER");
+		//NEW
+		btnRegister.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int newId = connectClass.register();
+				JOptionPane.showMessageDialog(frame, "Registration successful. New ID: " + newId);
+				reportframe reportframe= new reportframe(String.valueOf(newId)); //need to pass in uId!
+				reportframe.setVisible(true);
+				dispose();
+			}
+		});
 		btnRegister.setBackground(Color.LIGHT_GRAY);
 		btnRegister.setFont(new Font("Times New Roman", Font.BOLD, 13));
 		btnRegister.setBounds(228, 178, 107, 23);
 		contentPane.add(btnRegister);
+		
 	}
 }
